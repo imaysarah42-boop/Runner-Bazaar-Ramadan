@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Runner Bazaar Ramadan v2</title>
+    <title>Runner Bazar Ramadan v2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -21,7 +21,7 @@
     <div class="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8 border border-gray-100">
         
         <div class="flex flex-col items-center mb-6">
-            <h1 class="text-2xl font-extrabold text-orange-600 uppercase tracking-tighter text-center">Runner Bazaar Ramadan</h1>
+            <h1 class="text-2xl font-extrabold text-orange-600 uppercase tracking-tighter text-center">Runner Bazar Ramadan</h1>
             <div class="text-[10px] text-gray-400 space-y-1 mt-2 text-center font-medium">
                 <p>ⓘ Pembayaran secara QR sahaja</p>
                 <p>ⓘ Pesanan selepas 4 PM tidak dijamin sampai sebelum berbuka</p>
@@ -30,7 +30,7 @@
 
         <div class="space-y-5 text-sm">
             <div class="bg-slate-100 p-3 rounded-xl text text-center">
-                <p class="font-bold text-slate-700">Lokasi Bazaar: <span class="font-thin text-black-600">Bazaar Melang (Dataran McD)</span></p>
+                <p class="font-bold text-slate-700">Lokasi Bazar: <span class="font-thin text-black-600">Bazar Melang (Dataran McD)</span></p>
             </div>
             <div>
                 <label class="block font-extrabold text-slate-700 mb-1 ml-1">Nama:</label>
@@ -75,7 +75,8 @@
                         <span>Total:</span>
                         <span id="totalPrice" class="text-orange-600">RM 0.00</span>
                     </div>
-                    <p class="text-[9px] text-red-500 mt-1 font-bold italic uppercase">*Pembayaran secara QR sahaja</p>
+                    <p class="text-[9px] text-red-500 mt-1 font-bold italic uppercase">*Pembayaran secara QR sahaja</p> 
+                    <p class="text-[9px] text-red-500 mt-1 font-bold italic uppercase">*JIKA KEDAI KEHABISAN STOK/TUTUP, ORDER TERSEBUT AUTOMATIK DIBUANG</p>
                 </div>
             </div>
 
@@ -94,7 +95,7 @@
     // Kita set: Boleh order dari pukul 8 pagi sampai 5:30 petang sahaja
     // Lepas 5:30 petang (17:30) sampai subuh, butang akan disable
     const jamMula = 8;
-    const jamTutup = 17;
+    const jamTutup = 16;
     const minitTutup = 30;
 
     const totalMinitSekarang = (jam * 60) + sekarang.getMinutes();
@@ -184,9 +185,15 @@
                         ]
                     },
                     {
-                        name:"Bunga",
-                        image: "https://i.postimg.cc/FzSnLGh1/bunga.jpg",
+                        name:"Bunga59Cafe",
+                        image: "https://i.postimg.cc/SN10q1xH/bunga59.jpg",
                         items: [
+                            { name: "Nasi Ayam Penyet", price: 10.00 },
+                            { name: "Nasi Ayam Gepuk", price: 11.00 },
+                            { name: "Daging Dendeng", price: 13.00 },
+                            { name: "Quesillo", price: 10.00 },
+                            { name: "Caramel Puding", price: 3.00 },
+                            { name: "Loaded Potato", price: 7.00 },
                             { name: "Matcha Latte", price: 10.00 },
                             { name: "Kreamy Matcha Latte", price: 11.00 },
                             { name: "Matcha Lemonade", price: 10.00 },
@@ -216,11 +223,32 @@
                         ]
                     },
                     {
+                        name:"Mansor Soya",
+                        image: "https://i.postimg.cc/PxyrTbcN/Mansor-Soya.jpg",
+                        items: [
+                            { name: "Tau Fu Fa - Kecil", price: 2.00 },
+                            { name: "Tau Fu Fa - Besar", price: 4.00 },
+                            { name: "Air Soya - Kecil", price: 3.00 },
+                            { name: "Air Soya - Besar", price: 5.00 }
+                            
+                        ]
+                    },
+                    {
                         name:"Laksa Penang Kuala Pilah",
                         image: "https://i.postimg.cc/C586qJwj/laksa-penang-kuala-pilah.jpg",
                         items: [
                             { name: "Laksa Penang", price: 7.00 }
                             
+                        ]
+                    },
+                    {
+                        name:"Air Tebu Che Amin",
+                        image: "https://i.postimg.cc/DwRSMgkf/Kedai-Air-Che-Amir.jpg",
+                        items: [
+                            { name: "Air Tebu - 1 jug", price: 8.00 },
+                            { name: "Air Cincau", price: 3.00 },
+                            { name: "Air Teh Bunga", price: 3.00 }
+                        
                         ]
                     },
                     {
@@ -276,8 +304,10 @@
                             { name: "Otak-otak (9 keping)", price: 10.00 }
                         ]
                     }
+                    
                 ]
             },
+            
             
         ];
 
@@ -381,7 +411,17 @@
         priceBox.classList.remove('limit-error');
     }
     
-    let roundedDist = Math.ceil(currentDist);
+    // Dapatkan nilai jarak tepat dengan 2 titik perpuluhan
+    let distFixed = parseFloat(currentDist.toFixed(2));
+    
+    // Asingkan nombor bulat dan nombor perpuluhan
+    let decimalPart = distFixed - Math.floor(distFixed);
+
+    // Kalau perpuluhan 0.50 ke bawah (contoh: 3.1 - 3.5), kekal nombor bawah
+    // Kalau perpuluhan 0.51 ke atas (contoh: 3.6 - 3.9), bundar ke atas
+    let roundedDist = (decimalPart <= 0.50) ? Math.floor(distFixed) : Math.ceil(distFixed);
+
+    // Kira harga (Minimum RM3 untuk 3km pertama, tambah RM1 setiap km seterusnya)
     let delFee = (roundedDist <= 3) ? 3 : 3 + (roundedDist - 3) * 1; 
     document.getElementById('delText').innerText = `RM ${delFee.toFixed(2)}`;
 
@@ -469,7 +509,7 @@
 
     const totalPriceStr = document.getElementById('totalPrice').innerText;
 
-    const msg = `*PESANAN RUNNER BAZAAR RAMADAN*\n` +
+    const msg = `*PESANAN RUNNER BAZAR RAMADAN*\n` +
                 `Nama: ${name}\n` +
                 `Jarak: ${currentDist.toFixed(2)}km\n` +
                 `Remark: ${remark || '-'}\n` +
@@ -516,5 +556,4 @@
         window.onload = initApp;
     </script>
 </body>
-
 </html>
